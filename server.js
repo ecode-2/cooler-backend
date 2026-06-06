@@ -42,7 +42,7 @@ const payload = {
       {
         title: 'Custom Walk-In ' + coolerType,
         quantity: 1,
-        price: price.toFixed(2)
+        price: String(price)
       }
     ]
   }
@@ -62,10 +62,18 @@ const response = await fetch(
   }
 );
 
-const data = await response.json();
+console.log('PAYLOAD:');
+console.log(JSON.stringify(payload, null, 2));
+  
+console.log('Status:', response.status);
+console.log('Status Text:', response.statusText);
 
-console.log('Shopify response:');
-console.log(JSON.stringify(data, null, 2));
+const rawText = await response.text();
+
+console.log('RAW RESPONSE:');
+console.log(rawText);
+
+const data = JSON.parse(rawText);
 
 if (!response.ok) {
   console.error(data);
