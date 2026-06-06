@@ -13,27 +13,72 @@ app.get('/', (req, res) => {
 res.send('Cooler Backend Running');
 });
 
-app.get('/test-shopify', async (req, res) => {
+app.post('/create-order', async (req, res) => {
 
 try {
 
 ```
-const url =
+const price = Number(req.body.price || 0);
+const doors = req.body.doors || '';
+const depth = req.body.depth || '';
+const height = req.body.height || '';
+const freezer = req.body.freezer || false;
+const entry = req.body.entry || false;
+const entryPosition = req.body.entryPosition || 'None';
+
+const coolerType = freezer ? 'Freezer' : 'Cooler';
+
+const note =
+  'Custom Walk-In ' + coolerType + '\n\n' +
+  'Doors: ' + doors + '\n' +
+  'Depth: ' + depth + 'ft\n' +
+  'Height: ' + height + 'ft\n' +
+  'Entry Door: ' + (entry ? entryPosition : 'None') + '\n\n' +
+  'Quoted Price: $' + price;
+
+const payload = {
+  draft_order: {
+    note: note,
+    line_items: [
+      {
+        title: 'Custom Walk-In ' + coolerType,
+        quantity: 1,
+        price: price.toFixed(2)
+      }
+    ]
+  }
+};
+
+const response = await fetch(
   'https://' +
   SHOPIFY_STORE +
-  '/admin/api/2025-01/shop.json';
-
-const response = await fetch(url, {
-  method: 'GET',
-  headers: {
-    'X-Shopify-Access-Token': SHOPIFY_ADMIN_TOKEN,
-    'Content-Type': 'application/json'
+  '/admin/api/2025-01/draft_orders.json',
+  {
+    method: 'POST',
+    headers: {
+      'X-Shopify-Access-Token': SHOPIFY_ADMIN_TOKEN,
+      'Content-Type': 'application/json'
+    },
+    body: JSON.stringify(payload)
   }
-});
+);
 
 const data = await response.json();
 
-res.json(data);
+if (!response.ok) {
+  console.error(data);
+
+  return res.status(500).json({
+    success: false,
+    shopifyError: data
+  });
+}
+
+return res.json({
+  success: true,
+  invoiceUrl: data.draft_order.invoice_url,
+  draftOrderId: data.draft_order.id
+});
 ```
 
 } catch (error) {
@@ -41,7 +86,8 @@ res.json(data);
 ```
 console.error(error);
 
-res.status(500).json({
+return res.status(500).json({
+  success: false,
   error: error.message
 });
 ```
@@ -49,7 +95,6 @@ res.status(500).json({
 }
 
 });
-
 
 const PORT = process.env.PORT || 3000;
 
