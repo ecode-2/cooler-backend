@@ -35,8 +35,7 @@ const note =
   'Entry Door: ' + (entry ? entryPosition : 'None') + '\n\n' +
   'Quoted Price: $' + price;
 
-console.log('PAYLOAD:');
-console.log(JSON.stringify(payload, null, 2));
+
   
 const payload = {
   draft_order: {
@@ -81,11 +80,7 @@ const rawText = await response.text();
 console.log('RAW RESPONSE:');
 console.log(rawText);
 
-return res.send(rawText);
 
-
-console.log('RAW RESPONSE:');
-console.log(rawText);
 
 const data = JSON.parse(rawText);
 
