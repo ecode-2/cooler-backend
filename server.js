@@ -83,11 +83,6 @@ console.log(rawText);
 
 return res.send(rawText);
 
-  
-console.log('Status:', response.status);
-console.log('Status Text:', response.statusText);
-
-const rawText = await response.text();
 
 console.log('RAW RESPONSE:');
 console.log(rawText);
