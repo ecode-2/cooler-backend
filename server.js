@@ -35,6 +35,9 @@ const note =
   'Entry Door: ' + (entry ? entryPosition : 'None') + '\n\n' +
   'Quoted Price: $' + price;
 
+console.log('PAYLOAD:');
+console.log(JSON.stringify(payload, null, 2));
+  
 const payload = {
   draft_order: {
     note: note,
@@ -62,8 +65,7 @@ const response = await fetch(
   }
 );
 
-console.log('PAYLOAD:');
-console.log(JSON.stringify(payload, null, 2));
+
   
 console.log('Status:', response.status);
 console.log('Status Text:', response.statusText);
