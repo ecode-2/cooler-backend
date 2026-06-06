@@ -18,15 +18,18 @@ app.get('/test-shopify', async (req, res) => {
 try {
 
 ```
-const response = await fetch(
-  `https://${SHOPIFY_STORE}/admin/api/2025-01/shop.json`,
-  {
-    headers: {
-      'X-Shopify-Access-Token': SHOPIFY_ADMIN_TOKEN,
-      'Content-Type': 'application/json'
-    }
+const url =
+  'https://' +
+  SHOPIFY_STORE +
+  '/admin/api/2025-01/shop.json';
+
+const response = await fetch(url, {
+  method: 'GET',
+  headers: {
+    'X-Shopify-Access-Token': SHOPIFY_ADMIN_TOKEN,
+    'Content-Type': 'application/json'
   }
-);
+});
 
 const data = await response.json();
 
@@ -46,6 +49,7 @@ res.status(500).json({
 }
 
 });
+
 
 const PORT = process.env.PORT || 3000;
 
