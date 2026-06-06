@@ -17,7 +17,6 @@ app.post('/create-order', async (req, res) => {
 
 try {
 
-```
 const price = Number(req.body.price || 0);
 const doors = req.body.doors || '';
 const depth = req.body.depth || '';
@@ -79,18 +78,18 @@ return res.json({
   invoiceUrl: data.draft_order.invoice_url,
   draftOrderId: data.draft_order.id
 });
-```
+
 
 } catch (error) {
 
-```
+
 console.error(error);
 
 return res.status(500).json({
   success: false,
   error: error.message
 });
-```
+
 
 }
 
