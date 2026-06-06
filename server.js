@@ -51,6 +51,13 @@ const payload = {
   }
 };
 
+console.log('SHOPIFY STORE:', SHOPIFY_STORE);
+
+console.log('REQUEST METHOD: POST');
+
+console.log('PAYLOAD:');
+console.log(JSON.stringify(payload, null, 2));
+
 const response = await fetch(
   'https://' +
   SHOPIFY_STORE +
@@ -59,12 +66,22 @@ const response = await fetch(
     method: 'POST',
     headers: {
       'X-Shopify-Access-Token': SHOPIFY_ADMIN_TOKEN,
-      'Content-Type': 'application/json'
+      'Content-Type': 'application/json',
+      'Accept': 'application/json'
     },
     body: JSON.stringify(payload)
   }
 );
 
+console.log('HTTP STATUS:', response.status);
+console.log('HTTP STATUS TEXT:', response.statusText);
+
+const rawText = await response.text();
+
+console.log('RAW RESPONSE:');
+console.log(rawText);
+
+return res.send(rawText);
 
   
 console.log('Status:', response.status);
