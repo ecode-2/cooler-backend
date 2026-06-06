@@ -64,6 +64,9 @@ const response = await fetch(
 
 const data = await response.json();
 
+console.log('Shopify response:');
+console.log(JSON.stringify(data, null, 2));
+
 if (!response.ok) {
   console.error(data);
 
@@ -75,8 +78,7 @@ if (!response.ok) {
 
 return res.json({
   success: true,
-  invoiceUrl: data.draft_order.invoice_url,
-  draftOrderId: data.draft_order.id
+  shopifyResponse: data
 });
 
 
