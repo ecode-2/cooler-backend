@@ -15,104 +15,80 @@ res.send('Cooler Backend Running');
 
 app.post('/create-order', async (req, res) => {
 
-try {
+  try {
 
-const price = Number(req.body.price || 0);
-const doors = req.body.doors || '';
-const depth = req.body.depth || '';
-const height = req.body.height || '';
-const freezer = req.body.freezer || false;
-const entry = req.body.entry || false;
-const entryPosition = req.body.entryPosition || 'None';
+    const price = Number(req.body.price || 0);
+    const doors = req.body.doors || '';
+    const depth = req.body.depth || '';
+    const height = req.body.height || '';
+    const freezer = req.body.freezer || false;
+    const entry = req.body.entry || false;
+    const entryPosition = req.body.entryPosition || 'None';
 
-const coolerType = freezer ? 'Freezer' : 'Cooler';
+    const coolerType = freezer ? 'Freezer' : 'Cooler';
 
-const note =
-  'Custom Walk-In ' + coolerType + '\n\n' +
-  'Doors: ' + doors + '\n' +
-  'Depth: ' + depth + 'ft\n' +
-  'Height: ' + height + 'ft\n' +
-  'Entry Door: ' + (entry ? entryPosition : 'None') + '\n\n' +
-  'Quoted Price: $' + price;
+    const note =
+      'Custom Walk-In ' + coolerType + '\n\n' +
+      'Doors: ' + doors + '\n' +
+      'Depth: ' + depth + 'ft\n' +
+      'Height: ' + height + 'ft\n' +
+      'Entry Door: ' + (entry ? entryPosition : 'None') + '\n\n' +
+      'Quoted Price: $' + price;
 
-
-  
-const payload = {
-  draft_order: {
-    note: note,
-    line_items: [
-      {
-        title: 'Custom Walk-In ' + coolerType,
-        quantity: 1,
-        price: String(price)
+    const payload = {
+      draft_order: {
+        note: note,
+        line_items: [
+          {
+            title: 'Custom Walk-In ' + coolerType,
+            quantity: 1,
+            price: String(price)
+          }
+        ]
       }
-    ]
+    };
+
+    const response = await fetch(
+      'https://' +
+      SHOPIFY_STORE +
+      '/admin/api/2025-01/draft_orders.json',
+      {
+        method: 'POST',
+        headers: {
+          'X-Shopify-Access-Token': SHOPIFY_ADMIN_TOKEN,
+          'Content-Type': 'application/json',
+          'Accept': 'application/json'
+        },
+        body: JSON.stringify(payload)
+      }
+    );
+
+    const data = await response.json();
+
+    if (!response.ok) {
+      return res.status(500).json({
+        success: false,
+        shopifyError: data
+      });
+    }
+
+    return res.json({
+      success: true,
+      invoiceUrl: data.draft_order.invoice_url,
+      draftOrderId: data.draft_order.id
+    });
+
+  } catch (error) {
+
+    return res.status(500).json({
+      success: false,
+      error: error.message
+    });
+
   }
-};
-
-console.log('SHOPIFY STORE:', SHOPIFY_STORE);
-
-console.log('REQUEST METHOD: POST');
-
-console.log('PAYLOAD:');
-console.log(JSON.stringify(payload, null, 2));
-
-const response = await fetch(
-  'https://' +
-  SHOPIFY_STORE +
-  '/admin/api/2025-01/draft_orders.json',
-  {
-    method: 'POST',
-    headers: {
-      'X-Shopify-Access-Token': SHOPIFY_ADMIN_TOKEN,
-      'Content-Type': 'application/json',
-      'Accept': 'application/json'
-    },
-    body: JSON.stringify(payload)
-  }
-);
-
-console.log('HTTP STATUS:', response.status);
-console.log('HTTP STATUS TEXT:', response.statusText);
-
-const rawText = await response.text();
-
-console.log('RAW RESPONSE:');
-console.log(rawText);
-
-
-
-const data = JSON.parse(rawText);
-
-if (!response.ok) {
-  console.error(data);
-
-  return res.status(500).json({
-    success: false,
-    shopifyError: data
-  });
-}
-
-return res.json({
-  success: true,
-  shopifyResponse: data
-});
-
-
-} catch (error) {
-
-
-console.error(error);
-
-return res.status(500).json({
-  success: false,
-  error: error.message
-});
-
-
-}
 
 });
+
 
 const PORT = process.env.PORT || 3000;
 
