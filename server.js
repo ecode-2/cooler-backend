@@ -40,9 +40,26 @@ app.post('/create-order', async (req, res) => {
         note: note,
         line_items: [
           {
-            title: 'Custom Walk-In ' + coolerType,
+            title:
+              doors + ' Door Walk-In ' + coolerType,
+
             quantity: 1,
-            price: String(price)
+            price: String(price),
+
+            properties: [
+              {
+                name: 'Depth',
+                value: depth + 'ft'
+              },
+              {
+                name: 'Height',
+                value: height + 'ft'
+              },
+              {
+                name: 'Entry Door',
+                value: entry ? entryPosition : 'None'
+              }
+            ]
           }
         ]
       }
